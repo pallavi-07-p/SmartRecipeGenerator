@@ -1,0 +1,105 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Body Styling */
+  body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+    padding: 20px;
+  }
+  
+  /* Container Styling */
+  .container {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
+  }
+  
+  /* Heading Styling */
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #4a90e2;
+  }
+  
+  /* Error Message Styling */
+  .error-message {
+    color: #ff4d4d;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Results Intro Styling */
+  .results-intro {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #666;
+  }
+  
+  /* Recipe Results Container */
+  .recipe-results {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  /* Recipe Card Styling */
+  .recipe-card {
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    width: 250px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .recipe-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Recipe Title Styling */
+  .recipe-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  /* Recipe Image Styling */
+  .recipe-image {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+  
+  /* Back to Home Link Styling */
+  .back-home {
+    display: inline-block;
+    margin-top: 2rem;
+    padding: 0.75rem 1.5rem;
+    background: #4a90e2;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+  }
+  
+  .back-home:hover {
+    background: #357abd;
+  }

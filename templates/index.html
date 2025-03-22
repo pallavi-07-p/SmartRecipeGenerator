@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Recipe Generator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1>🍽️ Smart Recipe Generator</h1>
+    <p>Enter your ingredients to find the best recipes!</p>
+    
+    <form action="/get_recipe" method="POST">
+      <input type="text" id="ingredient-input" name="ingredients" placeholder="e.g., Tomato, Onion, Chicken" required>
+
+      <label for="diet">Dietary Preference:</label>
+      <select name="diet">
+        <option value="all">All</option>
+        <option value="vegetarian">Vegetarian</option>
+        <option value="gluten-free">Gluten-Free</option>
+        <option value="non-veg">Non-Veg</option>
+      </select>
+
+      <button type="submit">🍳 Find Recipes</button>
+    </form>
+  </div>
+</body>
+</html>

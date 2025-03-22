@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Results</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles1.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Recipe Results</h1>
+    
+    {% if error %}
+      <p class="error-message">{{ error }}</p>
+    {% else %}
+      <p class="results-intro">Here are the top recommended recipes:</p>
+      <div class="recipe-results">
+        {% for recipe in recipes %}
+          <div class="recipe-card">
+            <h2 class="recipe-title">{{ recipe.title }}</h2>
+            <img class="recipe-image" src="{{ recipe.image_url }}" alt="{{ recipe.title }}">
+            <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+            <p><strong>Dietary:</strong> {{ recipe.dietary }}</p>
+
+            <!-- ✅ Fix the 'View Process' button -->
+            <a href="{{ url_for('view_process', recipe_name=recipe.title | replace(' ', '_') | lower) }}" 
+               class="process-btn">👨‍🍳 View Process</a>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <a href="/" class="back-home">🏠 Back to Home</a>
+  </div>
+</body>
+</html>
