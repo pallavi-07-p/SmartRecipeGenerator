@@ -10,21 +10,16 @@ if not os.path.exists("recipes.txt"):
     print("❌ Error: recipes.txt not found!")
     exit()
 
-# ✅ Step 1: Load Correct Image Mappings from train.txt and test.txt
+# ✅ Step 1: Load Image Mappings with Validation
 image_mappings = {}
 
-for meta_file in ["train.txt", "test.txt"]:  # Load both training and test images
-    meta_path = os.path.join(META_PATH, meta_file)
-    if os.path.exists(meta_path):
-        with open(meta_path, "r") as file:
-            for line in file:
-                line = line.strip()
-                category, filename = line.split("/")  # Extract category and filename
-                if category not in image_mappings:
-                    image_mappings[category] = []
-                image_mappings[category].append(filename + ".jpg")  # Add .jpg extension
+for category in os.listdir(IMAGE_BASE_PATH):  # Loop through categories
+    category_path = os.path.join(IMAGE_BASE_PATH, category)
+    if os.path.isdir(category_path):
+        valid_images = [img for img in os.listdir(category_path) if img.endswith(".jpg")]
+        image_mappings[category] = valid_images[:100]  # Keep only first 100 images
 
-# ✅ Step 2: Load Recipes from recipes.txt
+# ✅ Step 2: Load Recipes from `recipes.txt`
 recipes = []
 with open("recipes.txt", "r") as file:
     for line in file:
@@ -32,7 +27,7 @@ with open("recipes.txt", "r") as file:
         if len(parts) == 2:
             food, ingredients = parts
 
-            # ✅ Step 3: Assign the Correct Image from Food-101
+            # ✅ Step 3: Assign a Valid Image from Food-101
             image_url = "/static/images/default.jpg"  # Default image
             if food in image_mappings and image_mappings[food]:  # Ensure images exist
                 for image_filename in image_mappings[food]:  # Check for a valid image
@@ -42,8 +37,6 @@ with open("recipes.txt", "r") as file:
                         break  # Use the first valid image
                 else:
                     print(f"🚨 No valid images found for: {food}, using default.")
-            else:
-                print(f"⚠️ No image mapping found for: {food}, using default.")
 
             # ✅ Step 4: Classify Recipe by Dietary Type
             ingredients_lower = ingredients.lower()
@@ -73,7 +66,7 @@ with open("recipes.txt", "r") as file:
                 "instructions": " | ".join(cooking_steps)  # Store as a single text field
             })
 
-# ✅ Step 7: Convert to DataFrame and Save to recipes.csv
+# ✅ Step 7: Convert to DataFrame and Save to `recipes.csv`
 df = pd.DataFrame(recipes)
 df.to_csv("recipes.csv", index=False)
 
