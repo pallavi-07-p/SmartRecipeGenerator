@@ -1,20 +1,15 @@
 import pandas as pd
 
-# Load the recipes dataset
+# Load recipes.csv
 df = pd.read_csv("recipes.csv")
 
-# Convert all recipe names to lowercase for comparison
-df["recipe"] = df["recipe"].str.lower()
-
-# Search for "bread_pudding"
-recipe_name = "bread_pudding"
-
-# Check if the recipe exists
-recipe_data = df[df["recipe"] == recipe_name]
-
-if not recipe_data.empty:
-    print(f"✅ Recipe Found: {recipe_name}")
-    print("📜 Instructions:", recipe_data["instructions"].values[0])
+# Check if the 'instructions' column exists and print a sample
+if "instructions" in df.columns:
+    print("✅ 'instructions' column found!")
+    print(df[["recipe", "instructions"]].head())  # Print first few rows
 else:
-    print(f"🚨 ERROR: Recipe '{recipe_name}' NOT FOUND in recipes.csv")
+    print("❌ 'instructions' column NOT found!")
+
+
+
 

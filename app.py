@@ -88,19 +88,19 @@ def serve_image(category, filename):
         print(f"🚨 Image Not Found: {image_path}")
         return abort(404, description="Image not found")  # Return 404 error
 
-# ✅ Fix `view_process` to accept correct `recipe_name`
+# ✅ View Recipe Making Process
 @app.route('/process/<recipe_name>')
 def view_process(recipe_name):
     """ Fetch the cooking process from recipes.csv """
 
     # Convert back underscores to spaces (Flask safe URL handling)
-    recipe_name = recipe_name.replace("_", " ").lower()
+    recipe_name = recipe_name.replace("_", " ").lower().strip()
 
     # ✅ Debugging: Print recipe name before lookup
     print(f"🔍 Looking for recipe process: {recipe_name}")
 
     # Retrieve recipe details (convert both to lowercase for accurate matching)
-    recipe_data = df[df["recipe"].str.lower().str.strip() == recipe_name.strip()]
+    recipe_data = df[df["recipe"].str.lower().str.strip() == recipe_name]
 
     if not recipe_data.empty:
         process_steps = recipe_data["instructions"].values[0].split(" | ")
@@ -110,7 +110,6 @@ def view_process(recipe_name):
         print(f"🚨 No instructions found for {recipe_name}")
 
     return render_template("process.html", recipe_name=recipe_name, process=process_steps)
-
 
 if __name__ == "__main__":
     app.run(debug=True)

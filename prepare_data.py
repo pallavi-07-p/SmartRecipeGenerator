@@ -10,7 +10,7 @@ if not os.path.exists("recipes.txt"):
     print("❌ Error: recipes.txt not found!")
     exit()
 
-# ✅ **Step 1: Load Correct Image Mappings from train.txt and test.txt**
+# ✅ Step 1: Load Correct Image Mappings from train.txt and test.txt
 image_mappings = {}
 
 for meta_file in ["train.txt", "test.txt"]:  # Load both training and test images
@@ -24,7 +24,7 @@ for meta_file in ["train.txt", "test.txt"]:  # Load both training and test image
                     image_mappings[category] = []
                 image_mappings[category].append(filename + ".jpg")  # Add .jpg extension
 
-# ✅ **Step 2: Load Recipes from recipes.txt**
+# ✅ Step 2: Load Recipes from recipes.txt
 recipes = []
 with open("recipes.txt", "r") as file:
     for line in file:
@@ -32,23 +32,29 @@ with open("recipes.txt", "r") as file:
         if len(parts) == 2:
             food, ingredients = parts
 
-            # ✅ **Step 3: Assign the Correct Image from Food-101**
+            # ✅ Step 3: Assign the Correct Image from Food-101
+            image_url = "/static/images/default.jpg"  # Default image
             if food in image_mappings and image_mappings[food]:  # Ensure images exist
-                image_filename = image_mappings[food][0]  # Pick the first image in the list
-                image_url = f"/dataset/food-101/images/{food}/{image_filename}"
+                for image_filename in image_mappings[food]:  # Check for a valid image
+                    image_path = os.path.join(IMAGE_BASE_PATH, food, image_filename)
+                    if os.path.exists(image_path):
+                        image_url = f"/dataset/food-101/images/{food}/{image_filename}"
+                        break  # Use the first valid image
+                else:
+                    print(f"🚨 No valid images found for: {food}, using default.")
             else:
-                image_url = "/static/images/default.jpg"  # Default image if missing
+                print(f"⚠️ No image mapping found for: {food}, using default.")
 
-            # ✅ **Step 4: Classify Recipe by Dietary Type**
+            # ✅ Step 4: Classify Recipe by Dietary Type
             ingredients_lower = ingredients.lower()
-            if any(x in ingredients_lower for x in ["chicken", "beef", "pork", "fish", "egg", "shrimp", "bacon"]):
+            if any(x in ingredients_lower for x in ["chicken", "beef", "pork", "fish", "shrimp", "bacon"]):
                 dietary = "non-veg"
             elif any(x in ingredients_lower for x in ["wheat", "flour", "barley", "rye"]):
                 dietary = "gluten-free"
             else:
                 dietary = "vegetarian"
 
-            # ✅ **Step 5: Auto-Generate Cooking Steps**
+            # ✅ Step 5: Auto-Generate Cooking Steps
             cooking_steps = [
                 f"Gather all ingredients: {ingredients}.",
                 "Preheat oven or prepare a cooking pan.",
@@ -58,7 +64,7 @@ with open("recipes.txt", "r") as file:
                 "Serve hot and enjoy!"
             ]
 
-            # ✅ **Step 6: Save the Recipe Data**
+            # ✅ Step 6: Save the Recipe Data
             recipes.append({
                 "recipe": food,
                 "ingredients": ingredients,
@@ -67,8 +73,8 @@ with open("recipes.txt", "r") as file:
                 "instructions": " | ".join(cooking_steps)  # Store as a single text field
             })
 
-# ✅ **Step 7: Convert to DataFrame and Save to recipes.csv**
+# ✅ Step 7: Convert to DataFrame and Save to recipes.csv
 df = pd.DataFrame(recipes)
 df.to_csv("recipes.csv", index=False)
 
-print("✅ recipes.csv updated with correct Food-101 image filenames & cooking steps!")
+print("✅ recipes.csv updated with valid images, dietary info & cooking steps!")
