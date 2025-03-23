@@ -125,5 +125,6 @@ def view_process(recipe_name):
 
     return render_template("process.html", recipe_name=recipe_name, process=process_steps)
 
+# ✅ Run the Flask app using Gunicorn on Render
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=10000)
