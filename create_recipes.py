@@ -1,111 +1,16 @@
-# Mapping of food categories to ingredients
-food_to_ingredients = {
-    "apple_pie": "apple sugar flour butter cinnamon",
-    "baby_back_ribs": "pork ribs barbecue_sauce",
-    "baklava": "phyllo_dough nuts honey butter",
-    "beef_carpaccio": "beef olive_oil arugula parmesan",
-    "beef_tartare": "beef egg_yolk capers onion",
-    "beet_salad": "beet goat_cheese arugula walnuts",
-    "beignets": "dough powdered_sugar",
-    "bibimbap": "rice beef egg vegetables gochujang",
-    "bread_pudding": "bread milk eggs sugar cinnamon",
-    "breakfast_burrito": "tortilla eggs cheese sausage potato",
-    "bruschetta": "bread tomato basil garlic olive_oil",
-    "caesar_salad": "lettuce croutons parmesan chicken caesar_dressing",
-    "cannoli": "ricotta chocolate_chips pastry_shell",
-    "caprese_salad": "tomato mozzarella basil olive_oil",
-    "carrot_cake": "carrot flour sugar eggs cream_cheese",
-    "ceviche": "fish lime onion cilantro tomato",
-    "cheesecake": "cream_cheese sugar eggs graham_cracker",
-    "cheese_plate": "cheese crackers fruit",
-    "chicken_curry": "chicken curry_paste coconut_milk onion",
-    "chicken_quesadilla": "tortilla chicken cheese",
-    "chicken_wings": "chicken wings hot_sauce butter",
-    "chocolate_cake": "flour sugar cocoa eggs butter",
-    "chocolate_mousse": "chocolate eggs cream sugar",
-    "churros": "dough sugar cinnamon",
-    "clam_chowder": "clams potato cream onion",
-    "club_sandwich": "bread chicken bacon lettuce tomato",
-    "crab_cakes": "crab breadcrumbs egg mayonnaise",
-    "creme_brulee": "cream sugar eggs vanilla",
-    "croque_madame": "bread ham cheese egg bechamel",
-    "cup_cakes": "flour sugar eggs butter frosting",
-    "deviled_eggs": "eggs mayonnaise mustard paprika",
-    "donuts": "dough sugar glaze",
-    "dumplings": "dough pork cabbage",
-    "edamame": "soybeans salt",
-    "eggs_benedict": "english_muffin ham eggs hollandaise_sauce",
-    "escargots": "snail butter garlic parsley",
-    "falafel": "chickpeas parsley garlic cumin",
-    "filet_mignon": "beef butter garlic",
-    "fish_and_chips": "fish potato flour beer",
-    "foie_gras": "duck_liver butter brioche",
-    "french_fries": "potato oil salt",
-    "french_onion_soup": "onion beef_stock bread cheese",
-    "french_toast": "bread eggs milk butter",
-    "fried_calamari": "squid flour oil",
-    "fried_rice": "rice egg vegetables soy_sauce",
-    "frozen_yogurt": "yogurt sugar fruit",
-    "garlic_bread": "bread butter garlic parsley",
-    "gnocchi": "potato flour egg",
-    "greek_salad": "tomato cucumber feta olive",
-    "grilled_cheese_sandwich": "bread cheese butter",
-    "grilled_salmon": "salmon olive_oil lemon dill",
-    "guacamole": "avocado lime onion tomato",
-    "gyro": "meat pita tzatziki onion tomato",
-    "hamburger": "beef bun cheese lettuce tomato",
-    "hot_and_sour_soup": "tofu mushroom bamboo_shoot egg",
-    "hot_dog": "sausage bun mustard ketchup",
-    "huevos_rancheros": "tortilla eggs salsa beans",
-    "hummus": "chickpeas tahini lemon garlic",
-    "ice_cream": "cream sugar vanilla",
-    "lasagna": "pasta tomato cheese beef",
-    "lobster_bisque": "lobster cream butter",
-    "lobster_roll_sandwich": "lobster bread butter mayonnaise",
-    "macaroni_and_cheese": "macaroni cheese milk butter",
-    "macarons": "almond_flour sugar egg_whites filling",
-    "miso_soup": "tofu seaweed miso_paste",
-    "mussels": "mussels white_wine garlic butter",
-    "nachos": "tortilla_chips cheese jalapeno salsa",
-    "omelette": "eggs cheese milk butter",
-    "onion_rings": "onion flour egg breadcrumbs",
-    "oysters": "oyster lemon hot_sauce",
-    "pad_thai": "rice_noodles shrimp egg peanuts",
-    "paella": "rice seafood chicken saffron",
-    "pancakes": "flour milk eggs butter syrup",
-    "panna_cotta": "cream sugar gelatin vanilla",
-    "peking_duck": "duck hoisin_sauce pancake cucumber",
-    "pho": "beef rice_noodles herbs broth",
-    "pizza": "dough tomato cheese basil",
-    "pork_chop": "pork butter garlic herbs",
-    "poutine": "fries cheese_curds gravy",
-    "prime_rib": "beef butter garlic herbs",
-    "pulled_pork_sandwich": "pork barbecue_sauce bun coleslaw",
-    "ramen": "noodles broth egg pork",
-    "ravioli": "pasta ricotta spinach",
-    "red_velvet_cake": "flour sugar cocoa eggs buttermilk",
-    "risotto": "rice butter parmesan broth",
-    "samosa": "potato peas pastry_spices",
-    "sashimi": "fish soy_sauce wasabi",
-    "scallops": "scallops butter garlic parsley",
-    "seaweed_salad": "seaweed sesame_oil sesame_seeds",
-    "shrimp_and_grits": "shrimp grits cheese butter",
-    "spaghetti_bolognese": "spaghetti tomato beef onion",
-    "spaghetti_carbonara": "spaghetti egg pancetta parmesan",
-    "spring_rolls": "rice_paper shrimp vegetables",
-    "steak": "beef butter garlic herbs",
-    "strawberry_shortcake": "strawberry shortcake whipped_cream",
-    "sushi": "rice fish seaweed",
-    "tacos": "tortilla beef lettuce cheese",
-    "takoyaki": "octopus batter green_onion bonito_flakes",
-    "tiramisu": "ladyfingers coffee mascarpone cocoa",
-    "tuna_tartare": "tuna avocado sesame_oil soy_sauce",
-    "waffles": "flour eggs milk butter syrup",
-}
+import pandas as pd
 
-# Write to recipes.txt
-with open("recipes.txt", "w") as file:
-    for food, ingredients in food_to_ingredients.items():
-        file.write(f"{food} {ingredients}\n")
+# Load recipes from CSV
+df = pd.read_csv("recipes.csv")
 
-print("recipes.txt created successfully.")
+# Write to recipes.txt including ingredients and instructions
+with open("recipes.txt", "w", encoding="utf-8") as file:
+    for index, row in df.iterrows():
+        recipe = row["recipe"]
+        ingredients = row["ingredients"]
+        instructions = row["instructions"]
+        
+        # Write recipe details in a readable format
+        file.write(f"{recipe} | Ingredients: {ingredients} | Instructions: {instructions}\n")
+
+print("✅ recipes.txt created successfully with cooking instructions.")

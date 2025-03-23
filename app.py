@@ -7,11 +7,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
 
-# Load the saved TF-IDF vectorizer
+# Load TF-IDF vectorizer
 with open("vectorizer.pkl", "rb") as f:
     vectorizer = pickle.load(f)
 
-# Load the recipes dataset
+# Load updated recipes dataset
 df = pd.read_csv("recipes.csv")
 
 # ✅ Correct dataset path
@@ -27,8 +27,8 @@ def get_recipe():
         print("\n🟢 Received a request to /get_recipe")
 
         # Get user input
-        ingredients = request.form.get("ingredients")
-        diet = request.form.get("diet", "all")  # Default to 'all' if no filter is selected
+        ingredients = request.form.get("ingredients", "").strip()
+        diet = request.form.get("diet", "all").strip().lower()  # Default to 'all'
         print(f"📝 User Input: {ingredients}, Diet Preference: {diet}")
 
         # Convert input ingredients into a TF-IDF vector
@@ -39,7 +39,6 @@ def get_recipe():
 
         # Get top 3 recipes
         top_indices = np.argsort(similarities)[-3:][::-1]
-
         print(f"🔍 Top 3 Similar Recipe Indices: {top_indices}")
 
         recipes = []
@@ -48,13 +47,22 @@ def get_recipe():
                 recommended_recipe = df.iloc[idx]["recipe"]
                 recommended_image = df.iloc[idx]["image_url"]
                 recommended_ingredients = df.iloc[idx]["ingredients"]
-                dietary = df.iloc[idx].get("dietary", "all")
+                dietary = df.iloc[idx].get("dietary", "all").lower()
 
-                # ✅ Fix Image Path
-                if pd.isna(recommended_image) or not recommended_image.startswith("/dataset"):
+                # ✅ Check dietary preference
+                if diet != "all" and dietary != diet:
+                    print(f"🚫 Skipping {recommended_recipe} due to dietary mismatch ({dietary} != {diet})")
+                    continue
+
+                # ✅ Fix Image Path: Ensure the image exists
+                image_parts = recommended_image.split("/")[-2:]  # Extract folder & file name
+                local_image_path = os.path.join(DATASET_PATH, *image_parts)
+
+                if not os.path.exists(local_image_path):
+                    print(f"🚨 Missing Image: {local_image_path} - Using default image")
                     recommended_image = url_for("static", filename="images/default.jpg")
                 else:
-                    recommended_image = recommended_image.replace("\\", "/")  # Fix Windows backslashes
+                    recommended_image = url_for("serve_image", category=image_parts[0], filename=image_parts[1])
 
                 recipes.append({
                     "title": recommended_recipe,
@@ -62,8 +70,10 @@ def get_recipe():
                     "ingredients": recommended_ingredients,
                     "dietary": dietary
                 })
-
                 print(f"🍏 Recipe: {recommended_recipe}, 🏷️ Dietary: {dietary}, 🖼️ Image: {recommended_image}")
+
+        if not recipes:
+            return render_template("result.html", error="❌ No matching recipes found.")
 
         return render_template("result.html", recipes=recipes)
 
@@ -78,36 +88,40 @@ def serve_image(category, filename):
     image_dir = os.path.join(DATASET_PATH, category)
     image_path = os.path.join(image_dir, filename)
 
-    # ✅ Debugging: Print image path
     print(f"🔍 Checking Image Path: {image_path}")
 
-    # Check if image exists
     if os.path.exists(image_path):
         return send_from_directory(image_dir, filename)
     else:
         print(f"🚨 Image Not Found: {image_path}")
         return abort(404, description="Image not found")  # Return 404 error
 
-# ✅ View Recipe Making Process
+# ✅ Fix `view_process` to accept correct `recipe_name`
 @app.route('/process/<recipe_name>')
 def view_process(recipe_name):
     """ Fetch the cooking process from recipes.csv """
+    formatted_name = recipe_name.replace("_", " ").strip().lower()
+    print(f"🔍 Looking for recipe process: {formatted_name}")
 
-    # Convert back underscores to spaces (Flask safe URL handling)
-    recipe_name = recipe_name.replace("_", " ").lower().strip()
+    # Normalize recipe names for comparison
+    df["recipe_normalized"] = df["recipe"].str.replace("_", " ").str.strip().str.lower()
 
-    # ✅ Debugging: Print recipe name before lookup
-    print(f"🔍 Looking for recipe process: {recipe_name}")
-
-    # Retrieve recipe details (convert both to lowercase for accurate matching)
-    recipe_data = df[df["recipe"].str.lower().str.strip() == recipe_name]
+    # Retrieve recipe details
+    recipe_data = df[df["recipe_normalized"] == formatted_name]
 
     if not recipe_data.empty:
-        process_steps = recipe_data["instructions"].values[0].split(" | ")
-        print(f"✅ Found instructions for {recipe_name}: {process_steps}")
+        process_steps = recipe_data.iloc[0]["instructions"]
+
+        # ✅ Ensure instructions are not empty or NaN
+        if pd.isna(process_steps) or process_steps.strip() == "":
+            process_steps = ["❌ No instructions available."]
+        else:
+            process_steps = process_steps.split(" | ")  # Convert text to list
+        
+        print(f"✅ Found instructions for {formatted_name}: {process_steps}")
     else:
         process_steps = ["❌ No instructions available for this recipe."]
-        print(f"🚨 No instructions found for {recipe_name}")
+        print(f"🚨 No instructions found for {formatted_name}")
 
     return render_template("process.html", recipe_name=recipe_name, process=process_steps)
 

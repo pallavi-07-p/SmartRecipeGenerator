@@ -1,14 +1,23 @@
 import pandas as pd
 
-# Load recipes.csv
+# Load the dataset
 df = pd.read_csv("recipes.csv")
 
-# Check if the 'instructions' column exists and print a sample
-if "instructions" in df.columns:
-    print("✅ 'instructions' column found!")
-    print(df[["recipe", "instructions"]].head())  # Print first few rows
+# Check if 'instructions' column exists
+print("Columns in CSV:", df.columns)
+
+# Check if "apple_pie" exists
+recipe_name = "apple_pie"
+recipe_data = df[df["recipe"].str.lower().str.strip() == recipe_name.strip()]
+
+if not recipe_data.empty:
+    instructions = recipe_data["instructions"].values[0]
+    print("✅ Found Instructions:", instructions.split(" | "))
 else:
-    print("❌ 'instructions' column NOT found!")
+    print("🚨 No Instructions Found")
+
+
+
 
 
 
