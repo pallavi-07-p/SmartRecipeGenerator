@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ recipe_name | title }} - Cooking Process</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>{{ recipe_name }} - Cooking Process</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles1.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>{{ recipe_name | title }} - Cooking Process</h1>
+        <h1>{{ recipe_name }} - Cooking Process</h1>
         <ul>
             {% for step in process %}
                 <li>{{ step }}</li>
             {% endfor %}
         </ul>
-        <a href="/">🏠 Back to Home</a>
+        <a href="/" class="back-home">🏠 Back to Home</a>
     </div>
 </body>
 </html>

@@ -49,6 +49,9 @@ def get_recipe():
                 recommended_ingredients = df.iloc[idx]["ingredients"]
                 dietary = df.iloc[idx].get("dietary", "all").lower()
 
+                # ✅ Fix duplicate ingredients issue
+                recommended_ingredients = ", ".join(sorted(set(recommended_ingredients.split(", "))))
+
                 # ✅ Check dietary preference
                 if diet != "all" and dietary != diet:
                     print(f"🚫 Skipping {recommended_recipe} due to dietary mismatch ({dietary} != {diet})")
@@ -64,12 +67,14 @@ def get_recipe():
                 else:
                     recommended_image = url_for("serve_image", category=image_parts[0], filename=image_parts[1])
 
+                # ✅ DO NOT INCLUDE "instructions" IN RESULTS
                 recipes.append({
                     "title": recommended_recipe,
                     "image_url": recommended_image,
                     "ingredients": recommended_ingredients,
                     "dietary": dietary
                 })
+
                 print(f"🍏 Recipe: {recommended_recipe}, 🏷️ Dietary: {dietary}, 🖼️ Image: {recommended_image}")
 
         if not recipes:
@@ -96,7 +101,7 @@ def serve_image(category, filename):
         print(f"🚨 Image Not Found: {image_path}")
         return abort(404, description="Image not found")  # Return 404 error
 
-# ✅ Fix `view_process` to accept correct `recipe_name`
+# ✅ Show instructions only when "View Process" is clicked
 @app.route('/process/<recipe_name>')
 def view_process(recipe_name):
     """ Fetch the cooking process from recipes.csv """
@@ -125,6 +130,7 @@ def view_process(recipe_name):
 
     return render_template("process.html", recipe_name=recipe_name, process=process_steps)
 
-# ✅ Run the Flask app using Gunicorn on Render
+# ✅ Run the Flask app for deployment on Render
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))  # Render uses PORT
+    app.run(host="0.0.0.0", port=port)
